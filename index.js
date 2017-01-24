@@ -4,7 +4,6 @@ var fs = require("fs");
 var cameraAngle = 0;
 
 app.get('/camera', function (req, res) {
-   console.log( req.query.angle );
    cameraAngle = req.query.angle;
    res.end( "" );
 })
@@ -15,11 +14,24 @@ var server = app.listen(9999, function () {
   console.log("Listening camera modification at http://%s:%s", host, port)
 });
 
+	
 module.exports = function MysticEnhancement(dispatch){
+	
+	let myLocation; 
+	dispatch.hook('cPlayerLocation', (event) => {
+			myLocation = event;
+			return true;
+	});
+
     dispatch.hook('cStartSkill', (event) => {
-        if(false){ //get mystic vengeance thrall skill id
+		console.info(event);
+		myLocation.w = cameraAngle;
+        dispatch.toServer('cPlayerLocation', myLocation);
+		if(event.skill == 67440264 ){ //get mystic vengeance thrall skill id
+			console.info("Modify thrall: "+event.w +" -> "+cameraAngle);
 			event.w = cameraAngle;
 		}
+		
         return true;
     })
 }
