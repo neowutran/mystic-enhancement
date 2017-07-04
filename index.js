@@ -14,17 +14,34 @@ module.exports = function MysticEnhancement(dispatch){
 		}
 		return false;
 	});
-
-    dispatch.hook('C_START_SKILL', 1, (event) => {
-		if(event.skill == 67440264 ){ //get mystic vengeance thrall skill id
+		
+	function getRadian(angle){
+		return angle*(2*Math.PI/0x10000);
+	}
+   function getDist(x1, y1, x2, y2){
+        return parseInt(Math.hypot(x2-x1, y2-y1));
+   }
+   
+    dispatch.hook('C_START_SKILL', 2, (event) => {
+		if(event.skill == 67278964){
 			lock = true;
-			var newLocation = JSON.parse(JSON.stringify(myLocation));
-			console.log(camera);
+			event.movementkey = 0;
 			myLocation.w = camera.angle();
 			event.w = camera.angle();
-			console.info("Modify thrall: "+event.w +" -> "+camera.angle());
+			var dist = getDist(event.x1, event.y1, event.x2, event.y2);
+			event.x2 = event.x1 + dist * Math.cos(getRadian(event.w));
+			event.y2 = event.y1 + dist * Math.sin(getRadian(event.w));
+			event.z2 = event.z1 + 300;
+			dispatch.toServer('C_START_SKILL', 2, event);
+			return false;
+		}
+		if(event.skill == 67440264){ //get mystic vengeance thrall skill id
+			lock = true;
+			var newLocation = JSON.parse(JSON.stringify(myLocation));
+			myLocation.w = camera.angle();
+			event.w = camera.angle();
 			dispatch.toServer('C_PLAYER_LOCATION', 1, myLocation);
-			dispatch.toServer('C_START_SKILL', 1, event);
+			dispatch.toServer('C_START_SKILL', 2, event);
 			setTimeout(function(){
 				lock = false;
 			}, 800);
