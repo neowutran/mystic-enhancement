@@ -24,9 +24,7 @@ module.exports = function MysticEnhancement(dispatch){
    
     dispatch.hook('C_START_SKILL', 2, (event) => {
 		if(event.skill == 67278964){
-			lock = true;
 			event.movementkey = 0;
-			myLocation.w = camera.angle();
 			event.w = camera.angle();
 			var dist = getDist(event.x1, event.y1, event.x2, event.y2);
 			event.x2 = event.x1 + dist * Math.cos(getRadian(event.w));
