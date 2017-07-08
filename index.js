@@ -29,7 +29,7 @@ module.exports = function MysticEnhancement(dispatch){
 			var dist = getDist(event.x1, event.y1, event.x2, event.y2);
 			event.x2 = event.x1 + dist * Math.cos(getRadian(event.w));
 			event.y2 = event.y1 + dist * Math.sin(getRadian(event.w));
-			event.z2 = event.z1 + 300;
+			event.z2 = event.z1 + 4;
 			dispatch.toServer('C_START_SKILL', 2, event);
 			return false;
 		}
