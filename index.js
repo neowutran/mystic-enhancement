@@ -33,7 +33,7 @@ module.exports = function MysticEnhancement(dispatch){
 			dispatch.toServer('C_START_SKILL', 2, event);
 			return false;
 		}
-		if(event.skill == 67440264){ //get mystic vengeance thrall skill id
+		if(event.skill == 67440064){ //get mystic vengeance thrall skill id
 			lock = true;
 			var newLocation = JSON.parse(JSON.stringify(myLocation));
 			myLocation.w = camera.angle();
