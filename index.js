@@ -2,8 +2,9 @@ var express = require('express');
 var Camera = require('camera');
 var app = express();
 var fs = require("fs");
-const Vec3 = require('vec3');	
-
+const Vec3 = require('tera-vec3');
+const MULT_INT16_TO_RAD = 1 / 0x8000 * Math.PI,
+	  MULT_RAD_TO_INT16 = 1 / Math.PI * 0x8000
 module.exports = function MysticEnhancement(dispatch){
 	const camera = new Camera(false);
 	let myLocation; 
@@ -23,30 +24,15 @@ module.exports = function MysticEnhancement(dispatch){
         return parseInt(Math.hypot(x2-x1, y2-y1));
    }
    
-    dispatch.hook('C_START_SKILL', 5, (event) => {
-		console.log(event.w, event.loc.y);
-		if(event.skill == 67278964 || event.skill == 67548964){
+    dispatch.hook('C_START_SKILL', 7, (event) => {
+		if(event.skill.id == 170100 || event.skill.id == 440100){
 			event.moving = false;
 			event.continue = false;
-			event.w = camera.angle();
+			event.w = camera.angle() * MULT_INT16_TO_RAD;
 			var dist = getDist(event.loc.x, event.loc.y, event.dest.x, event.dest.y);
 			event.dest = new Vec3( event.loc.x + dist * Math.cos(getRadian(event.w))  ,  event.loc.y + dist * Math.sin(getRadian(event.w)), event.loc.z);
-			dispatch.toServer('C_START_SKILL', 5, event);
-			return false;
-		}
-		if(event.skill == 67440064){ // || event.skill == 67440094 || event.skill == 67380194 || event.skill == 67449594){ //get mystic vengeance thrall skill id
-			lock = true;
-			var newLocation = JSON.parse(JSON.stringify(myLocation));
-			myLocation.w = camera.angle();
-			event.w = camera.angle();
-			dispatch.toServer('C_PLAYER_LOCATION', 1, myLocation);
-			dispatch.toServer('C_START_SKILL', 5, event);
-			setTimeout(function(){
-				lock = false;
-			}, 800);
-			return false;
-		}
-		
-        return true;
-    })
+		}	
+		dispatch.send('C_START_SKILL', 7, event);
+        return false;
+    });
 }
